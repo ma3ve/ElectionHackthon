@@ -14,6 +14,8 @@ const reducer = (ethState, action) => {
   switch (action.type) {
     case "setEthState":
       return action.ethState;
+    default:
+      return ethState;
   }
 };
 
