@@ -26,10 +26,6 @@ function App() {
     contract: null,
     networkId: null,
   });
-  // const [web3, setWeb3] = useState(null);
-  // const [contract, setContract] = useState(null);
-  // const [accounts, setAccounts] = useState([]);
-  // const [networkId, setNetworkId] = useState(null);
 
   useEffect(() => {
     (async () => {
