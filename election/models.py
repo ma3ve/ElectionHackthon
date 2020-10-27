@@ -10,12 +10,12 @@ class Election(models.Model):
     start = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=300)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='election/')
 
 
 class Candidate(models.Model):
     address = models.CharField(max_length=50)
     election = models.ForeignKey(to=Election, on_delete=models.CASCADE)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='candidate/')
     name = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now_add=True)

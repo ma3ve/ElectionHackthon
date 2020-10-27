@@ -2,7 +2,8 @@ from django.shortcuts import render
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['POST'])
@@ -15,3 +16,9 @@ def register(request):
     response['access'] = str(token.access_token)
     response['refresh'] = str(token)
     return Response(response)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def verifyToken(request):
+    return Response({"success": True})
