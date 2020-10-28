@@ -22,6 +22,7 @@ const reducer = (ethState, action) => {
     case "setEthState":
       return action.ethState;
     case "setToken":
+      console.log(ethState);
       return { token: action.token, ...ethState };
     default:
       return ethState;
@@ -36,9 +37,11 @@ function App(props) {
     networkId: null,
     token: null,
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const web3 = await getWeb3();
 
@@ -72,10 +75,10 @@ function App(props) {
       try {
         const token = Cookies.get("token");
         if (token) {
-          console.log(token);
+          console.log("token", token);
           const res = await axios({
             method: "GET",
-            url: "auth/verify/",
+            url: "/auth/verify/",
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -84,16 +87,16 @@ function App(props) {
             dispatch({ type: "setToken", token });
           }
         } else {
-          console.log("haha");
           props.history.push("/login");
         }
       } catch (error) {
         Cookies.remove("token");
       }
+      setLoading(false);
     })();
   }, []);
 
-  if (!ethState.web3) {
+  if (!ethState.web3 || loading) {
     return <div>Loading Web3, accounts, and contract...</div>;
   }
   return (
