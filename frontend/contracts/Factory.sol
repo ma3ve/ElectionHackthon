@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >0.5.0 <0.7.1;
 
+contract Factory {
+    address electionAddress;
+    event GetELectionAddress(address _electionAddress);
+
+    function createElection() public returns (address) {
+        electionAddress = address(new Election(msg.sender));
+        emit GetELectionAddress(electionAddress);
+    }
+}
+
 contract Election {
     address public admin;
     mapping(address => bool) public Voter;
@@ -36,8 +46,8 @@ contract Election {
         _;
     }
 
-    constructor() public {
-        admin = msg.sender;
+    constructor(address _admin) public {
+        admin = _admin;
         Staff[admin] = true;
     }
 

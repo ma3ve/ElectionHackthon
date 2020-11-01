@@ -1,5 +1,4 @@
 import React, { useEffect, useReducer, useState } from "react";
-import ElectionContract from "./contracts/Election.json";
 import getWeb3 from "./getWeb3";
 import {
   BrowserRouter as Router,
@@ -14,7 +13,9 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Cookies from "js-cookie";
 import axios from "axios";
-
+import Navbar from "./components/Navbar";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
 export const EthContext = React.createContext();
 
 const reducer = (ethState, action) => {
@@ -33,7 +34,6 @@ function App(props) {
   const [ethState, dispatch] = useReducer(reducer, {
     web3: null,
     accounts: null,
-    contract: null,
     networkId: null,
     token: null,
   });
@@ -49,21 +49,31 @@ function App(props) {
 
         const networkId = await web3.eth.net.getId();
 
-        const deployedNetwork =
-          ElectionContract.networks[
-            Object.keys(ElectionContract.networks)[
-              Object.keys(ElectionContract.networks).length - 1
-            ]
-          ];
+        // const deployedNetwork =
+        //   FactoryContract.networks[
+        //     Object.keys(FactoryContract.networks)[
+        //       Object.keys(FactoryContract.networks).length - 1
+        //     ]
+        //   ];
 
-        const election = new web3.eth.Contract(
-          ElectionContract.abi,
-          deployedNetwork.address
-        );
+        // const factory = new web3.eth.Contract(
+        //   FactoryContract.abi,
+        //   deployedNetwork.address
+        // );
+        // const res = await factory.methods.createElection().send({
+        //   from: accounts[0],
+        // });
+        // let electionAddress =
+        //   res.events.GetELectionAddress.returnValues[0];
 
+        // const election = new web3.eth.Contract(
+        //   ElectionContract.abi,
+        //   electionAddress
+        // );
+        // console.log(await election.methods.admin().call());
         dispatch({
           type: "setEthState",
-          ethState: { web3, accounts, networkId, election },
+          ethState: { web3, accounts, networkId },
         });
       } catch (error) {
         alert(
@@ -100,33 +110,36 @@ function App(props) {
     return <div>Loading Web3, accounts, and contract...</div>;
   }
   return (
-    <EthContext.Provider value={{ ...ethState, dispatch }}>
-      <Router>
-        <Switch>
-          <ProtectedRoute
-            component={Admin}
-            path="/admin/:adminAddress"
-            isAuthenticated={ethState.token}
-            exact
-            redirectPath="/login"
-          />
-          <Route
-            component={Election}
-            path="/election/:electionAddress"
-            exact
-          />
-          <ProtectedRoute
-            component={Login}
-            redirectPath="/"
-            path="/login"
-            exact
-            isAuthenticated={!ethState.token}
-          />
-          <Route component={Home} path="/" exact />
-          <Route component={NotFound} path="" exact />
-        </Switch>
-      </Router>
-    </EthContext.Provider>
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <EthContext.Provider value={{ ...ethState, dispatch }}>
+        <Router>
+          <Route component={Navbar} />
+          <Switch>
+            <ProtectedRoute
+              component={Admin}
+              path="/admin"
+              isAuthenticated={ethState.token}
+              exact
+              redirectPath="/login"
+            />
+            <Route
+              component={Election}
+              path="/election/:electionAddress"
+              exact
+            />
+            <ProtectedRoute
+              component={Login}
+              redirectPath="/"
+              path="/login"
+              exact
+              isAuthenticated={!ethState.token}
+            />
+            <Route component={Home} path="/" exact />
+            <Route component={NotFound} path="" exact />
+          </Switch>
+        </Router>
+      </EthContext.Provider>
+    </MuiPickersUtilsProvider>
   );
 }
 

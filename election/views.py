@@ -41,3 +41,14 @@ def get_election(request, id):
         return Response({"error": "election doesnt exist"}, status=404)
     electionSerializer = ElectionSerializer(qs[0])
     return Response(electionSerializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_elections(request):
+    qs = Election.objects.filter(admin_id=request.user.id)
+    print(qs)
+    if not qs.exists():
+        return Response({"error": "election doesnt exist"}, status=404)
+    electionSerializer = ElectionSerializer(qs, many=True)
+    return Response(electionSerializer.data)
